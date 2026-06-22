@@ -98,7 +98,8 @@ public class PhantomGuardService extends Service {
         ).show();
 
 
-        cameraHelper.capturePhoto();
+        String photoPath =
+                cameraHelper.capturePhoto();
 
 
         wifiScanner.scan();
@@ -118,7 +119,7 @@ public class PhantomGuardService extends Service {
                 new EmailSender(this);
 
 
-        sender.send(null);
+        sender.send(photoPath);
 
 
 
