@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+
+
+    <uses-permission android:name="android.permission.CAMERA"/>
+
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_DATA_SYNC"/>
+    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE"/>
+
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
+
+    <uses-permission android:name="android.permission.VIBRATE"/>
+
+    <uses-permission android:name="android.permission.FLASHLIGHT"/>
+
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE"/>
+
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED"/>
+
+
+
+    <application
+
+        android:theme="@style/Theme.PhantomGuard"
+
+        android:label="Phantom Guard"
+
+        android:allowBackup="true">
+
+
+
+        <activity
+            android:name=".SplashActivity"
+            android:exported="true">
+
+
+            <intent-filter>
+
+                <action android:name="android.intent.action.MAIN"/>
+
+                <category android:name="android.intent.category.LAUNCHER"/>
+
+            </intent-filter>
+
+
+        </activity>
+
+
+
+        <activity
+            android:name=".SetupActivity"
+            android:exported="false"/>
+
+
+        <activity
+            android:name=".MainActivity"
+            android:exported="false"/>
+
+
+        <activity
+            android:name=".EvidenceActivity"
+            android:exported="false"/>
+
+
+
+        <service
+
+            android:name=".PhantomGuardService"
+
+            android:foregroundServiceType="dataSync"
+
+            android:exported="false"/>
+
+
+
+        <receiver
+
+            android:name=".BootReceiver"
+
+            android:exported="true">
+
+
+            <intent-filter>
+
+                <action android:name="android.intent.action.BOOT_COMPLETED"/>
+
+            </intent-filter>
+
+
+        </receiver>
+
+
+
+    </application>
+
+
+</manifest>

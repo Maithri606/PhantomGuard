@@ -1,0 +1,36 @@
+<resources>
+
+
+    <style name="Theme.PhantomGuard"
+        parent="Theme.MaterialComponents.DayNight.NoActionBar">
+
+
+        <item name="android:fontFamily">
+            sans
+        </item>
+
+
+        <item name="android:colorAccent">
+            @color/cyan
+        </item>
+
+
+        <item name="android:windowBackground">
+            @color/bg
+        </item>
+
+
+        <item name="android:navigationBarColor">
+            @color/bg
+        </item>
+
+
+        <item name="android:statusBarColor">
+            @color/bg
+        </item>
+
+
+    </style>
+
+
+</resources>

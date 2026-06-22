@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+
+<LinearLayout
+
+    xmlns:android="http://schemas.android.com/apk/res/android"
+
+    android:layout_width="match_parent"
+
+    android:layout_height="match_parent"
+
+    android:orientation="vertical"
+
+    android:gravity="center"
+
+    android:padding="25dp"
+
+    android:background="@color/bg">
+
+
+    <TextView
+
+        android:text="Setup Phantom Guard"
+
+        android:textSize="28sp"
+
+        android:textStyle="bold"
+
+        android:textColor="@color/cyan"
+
+        android:layout_width="wrap_content"
+
+        android:layout_height="wrap_content"/>
+
+
+
+
+    <LinearLayout
+
+        android:background="@drawable/card_background"
+
+        android:padding="20dp"
+
+        android:orientation="vertical"
+
+        android:layout_marginTop="30dp"
+
+        android:layout_width="match_parent"
+
+        android:layout_height="wrap_content">
+
+
+
+        <EditText
+
+            android:id="@+id/email"
+
+            android:hint="Owner Email"
+
+            android:textColor="@color/white"
+
+            android:textColorHint="@color/gray"
+
+            android:layout_width="match_parent"
+
+            android:layout_height="wrap_content"/>
+
+
+
+        <TextView
+
+            android:id="@+id/device"
+
+            android:text="Device ID"
+
+            android:textColor="@color/green"
+
+            android:textSize="15sp"
+
+            android:layout_marginTop="20dp"
+
+            android:layout_width="wrap_content"
+
+            android:layout_height="wrap_content"/>
+
+
+
+        <Button
+
+            android:id="@+id/setupBtn"
+
+            android:text="START PROTECTION"
+
+            android:layout_marginTop="25dp"
+
+            android:layout_width="match_parent"
+
+            android:layout_height="wrap_content"/>
+
+
+    </LinearLayout>
+
+
+
+</LinearLayout>
