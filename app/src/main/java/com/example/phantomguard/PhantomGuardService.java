@@ -98,20 +98,14 @@ public class PhantomGuardService extends Service {
         ).show();
 
 
-
-
         cameraHelper.capturePhoto();
-
 
 
         wifiScanner.scan();
 
 
-
-
         EvidenceDatabase db =
                 new EvidenceDatabase(this);
-
 
 
         db.saveEvidence(
@@ -120,13 +114,19 @@ public class PhantomGuardService extends Service {
         );
 
 
+        EmailSender sender =
+                new EmailSender(this);
+
+
+        sender.send(null);
+
+
 
         Toast.makeText(
                 this,
-                "Evidence Saved",
+                "Evidence Saved + Email Sent",
                 Toast.LENGTH_LONG
         ).show();
-
 
 
     }
