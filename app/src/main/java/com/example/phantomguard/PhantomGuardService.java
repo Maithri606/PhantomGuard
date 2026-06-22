@@ -98,42 +98,68 @@ public class PhantomGuardService extends Service {
         ).show();
 
 
-        String photoPath =
-                cameraHelper.capturePhoto();
-
 
         wifiScanner.scan();
 
 
-        EvidenceDatabase db =
-                new EvidenceDatabase(this);
+
+        if(MainActivity.instance != null){
 
 
-        db.saveEvidence(
-                "captured_photo.jpg",
-                wifiScanner.getData()
-        );
+            cameraHelper.capturePhoto(
+                    MainActivity.instance,
+                    path -> {
 
 
-        EmailSender sender =
-                new EmailSender(this);
-
-
-        sender.send(photoPath);
+                        EvidenceDatabase db =
+                                new EvidenceDatabase(this);
 
 
 
-        Toast.makeText(
-                this,
-                "Evidence Saved + Email Sent",
-                Toast.LENGTH_LONG
-        ).show();
+                        db.saveEvidence(
+                                path,
+                                wifiScanner.getData()
+                        );
+
+
+
+                        EmailSender sender =
+                                new EmailSender(this);
+
+
+
+                        sender.send(path);
+
+
+
+                        Toast.makeText(
+                                this,
+                                "Photo + Email Sent",
+                                Toast.LENGTH_LONG
+                        ).show();
+
+
+
+                    }
+            );
+
+
+        }
+        else{
+
+
+            Toast.makeText(
+                    this,
+                    "Camera unavailable",
+                    Toast.LENGTH_LONG
+            ).show();
+
+
+        }
+
 
 
     }
-
-
-
 
 
 

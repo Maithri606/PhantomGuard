@@ -2,6 +2,7 @@ package com.example.phantomguard;
 
 
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.widget.*;
 
@@ -11,10 +12,11 @@ import androidx.appcompat.app.AppCompatActivity;
 public class MainActivity extends AppCompatActivity {
 
 
+    public static MainActivity instance;
 
-    TextView status,device;
+    TextView status, device;
 
-    Button activate,catchBtn,history;
+    Button activate, catchBtn, history;
 
 
 
@@ -26,23 +28,27 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
 
+        // IMPORTANT
+        instance = this;
 
-        status=findViewById(R.id.status);
 
-        device=findViewById(R.id.device);
 
-        activate=findViewById(R.id.activate);
+        status = findViewById(R.id.status);
 
-        catchBtn=findViewById(R.id.catchBtn);
+        device = findViewById(R.id.device);
 
-        history=findViewById(R.id.history);
+        activate = findViewById(R.id.activate);
+
+        catchBtn = findViewById(R.id.catchBtn);
+
+        history = findViewById(R.id.history);
 
 
 
 
         device.setText(
 
-                "Device Protected\n\nID : "+
+                "Device Protected\n\nID : " +
 
                         getSharedPreferences(
                                 "device",
@@ -61,19 +67,18 @@ public class MainActivity extends AppCompatActivity {
         activate.setOnClickListener(v->{
 
 
-            Intent i=
+            Intent i =
                     new Intent(
                             this,
                             PhantomGuardService.class
                     );
 
 
-            i.setAction(
-                    "ACTIVATE"
-            );
+            i.setAction("ACTIVATE");
 
 
             startService(i);
+
 
 
             status.setText(
@@ -87,19 +92,18 @@ public class MainActivity extends AppCompatActivity {
 
 
 
+
         catchBtn.setOnClickListener(v->{
 
 
-            Intent i=
+            Intent i =
                     new Intent(
                             this,
                             PhantomGuardService.class
                     );
 
 
-            i.setAction(
-                    "CATCH"
-            );
+            i.setAction("CATCH");
 
 
             startService(i);
@@ -112,6 +116,7 @@ public class MainActivity extends AppCompatActivity {
 
 
         });
+
 
 
 
@@ -132,8 +137,26 @@ public class MainActivity extends AppCompatActivity {
 
 
 
-    }
 
+        // Camera permission
+
+        if(checkSelfPermission(
+                android.Manifest.permission.CAMERA)
+
+                != PackageManager.PERMISSION_GRANTED){
+
+
+            requestPermissions(
+                    new String[]{
+                            android.Manifest.permission.CAMERA
+                    },
+                    100
+            );
+
+        }
+
+
+    }
 
 
 }
