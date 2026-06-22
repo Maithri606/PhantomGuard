@@ -13,19 +13,25 @@ import android.widget.Toast;
 public class PhantomGuardService extends Service {
 
 
+
     CameraHelper cameraHelper;
     WifiScanner wifiScanner;
+
+    MediaPlayer player;
+
 
 
 
     @Override
-    public void onCreate(){
+    public void onCreate() {
 
         super.onCreate();
 
 
+
         cameraHelper =
                 new CameraHelper(this);
+
 
 
         wifiScanner =
@@ -35,8 +41,9 @@ public class PhantomGuardService extends Service {
 
         createNotification();
 
-
     }
+
+
 
 
 
@@ -47,11 +54,11 @@ public class PhantomGuardService extends Service {
             Intent intent,
             int flags,
             int startId
-    ){
+    ) {
 
 
 
-        if(intent!=null){
+        if(intent != null){
 
 
             String action =
@@ -61,6 +68,7 @@ public class PhantomGuardService extends Service {
 
             if("ACTIVATE".equals(action)){
 
+
                 activate();
 
             }
@@ -69,13 +77,13 @@ public class PhantomGuardService extends Service {
 
             if("CATCH".equals(action)){
 
+
                 alert();
 
             }
 
 
         }
-
 
 
         return START_STICKY;
@@ -88,7 +96,9 @@ public class PhantomGuardService extends Service {
 
 
 
+
     private void activate(){
+
 
 
         Toast.makeText(
@@ -99,20 +109,26 @@ public class PhantomGuardService extends Service {
 
 
 
+
         wifiScanner.scan();
+
 
 
 
         if(MainActivity.instance != null){
 
 
+
             cameraHelper.capturePhoto(
                     MainActivity.instance,
+
                     path -> {
+
 
 
                         EvidenceDatabase db =
                                 new EvidenceDatabase(this);
+
 
 
 
@@ -123,12 +139,16 @@ public class PhantomGuardService extends Service {
 
 
 
+
+
                         EmailSender sender =
                                 new EmailSender(this);
 
 
 
                         sender.send(path);
+
+
 
 
 
@@ -142,6 +162,7 @@ public class PhantomGuardService extends Service {
 
                     }
             );
+
 
 
         }
@@ -158,8 +179,13 @@ public class PhantomGuardService extends Service {
         }
 
 
-
     }
+
+
+
+
+
+
 
 
 
@@ -167,9 +193,10 @@ public class PhantomGuardService extends Service {
     private void alert(){
 
 
+
         Toast.makeText(
                 this,
-                "⚠ INTRUDER DETECTED ⚠",
+                "🚨 INTRUDER DETECTED 🚨",
                 Toast.LENGTH_LONG
         ).show();
 
@@ -177,60 +204,133 @@ public class PhantomGuardService extends Service {
 
 
 
+
+
+        // VIBRATION
+
         Vibrator vibrator =
                 (Vibrator)
                         getSystemService(
-                                VIBRATOR_SERVICE);
+                                VIBRATOR_SERVICE
+                        );
 
 
 
-        if(Build.VERSION.SDK_INT>=26){
+
+        if(vibrator != null){
 
 
-            vibrator.vibrate(
-                    VibrationEffect.createOneShot(
-                            5000,
-                            VibrationEffect.DEFAULT_AMPLITUDE
-                    )
-            );
 
+            if(Build.VERSION.SDK_INT >= 26){
+
+
+                vibrator.vibrate(
+
+                        VibrationEffect.createWaveform(
+
+                                new long[]{
+                                        0,
+                                        500,
+                                        300,
+                                        500,
+                                        300,
+                                        1000
+                                },
+
+                                -1
+
+                        )
+
+                );
+
+
+            }
+            else{
+
+
+                vibrator.vibrate(5000);
+
+            }
 
         }
-        else{
 
 
-            vibrator.vibrate(5000);
 
 
-        }
 
 
+
+
+
+        // FLASHLIGHT
 
 
         try{
 
 
-            CameraManager cm =
+            CameraManager cameraManager =
                     (CameraManager)
                             getSystemService(
-                                    CAMERA_SERVICE);
+                                    CAMERA_SERVICE
+                            );
 
 
 
-            String id =
-                    cm.getCameraIdList()[0];
+            String cameraId =
+                    cameraManager
+                            .getCameraIdList()[0];
 
 
 
-            cm.setTorchMode(
-                    id,
-                    true
-            );
+
+            new Thread(() -> {
+
+
+                try{
+
+
+                    for(int i=0;i<10;i++){
+
+
+
+                        cameraManager.setTorchMode(
+                                cameraId,
+                                true
+                        );
+
+
+                        Thread.sleep(300);
+
+
+
+                        cameraManager.setTorchMode(
+                                cameraId,
+                                false
+                        );
+
+
+                        Thread.sleep(300);
+
+
+
+                    }
+
+
+                }
+                catch(Exception e){
+
+                    e.printStackTrace();
+
+                }
+
+
+
+            }).start();
+
 
 
         }
         catch(Exception e){
-
 
             e.printStackTrace();
 
@@ -239,7 +339,103 @@ public class PhantomGuardService extends Service {
 
 
 
+
+
+
+
+        // ALARM SOUND
+
+
+        player =
+                MediaPlayer.create(
+                        this,
+                        R.raw.alarm
+                );
+
+
+        if (player != null) {
+
+            player.setLooping(true);
+            player.start();
+
+            // STOP AFTER 5 SECONDS
+            new android.os.Handler(
+                    android.os.Looper.getMainLooper()
+            ).postDelayed(() -> {
+
+                if (player != null && player.isPlaying()) {
+                    player.stop();
+                    player.release();
+                    player = null;
+                }
+
+            }, 5000);
+        }
+
+
+
+
+
+
+
+
+        // HIGH ALERT NOTIFICATION
+
+
+        NotificationManager nm =
+                (NotificationManager)
+                        getSystemService(
+                                NOTIFICATION_SERVICE
+                        );
+
+
+
+
+        Notification notification =
+                new Notification.Builder(
+                        this,
+                        "phantom_channel"
+                )
+
+
+                        .setContentTitle(
+                                "🚨 PHANTOM GUARD ALERT"
+                        )
+
+
+                        .setContentText(
+                                "Intruder detected!"
+                        )
+
+
+                        .setSmallIcon(
+                                android.R.drawable.ic_dialog_alert
+                        )
+
+
+                        .setPriority(
+                                Notification.PRIORITY_MAX
+                        )
+
+
+                        .setAutoCancel(false)
+
+
+                        .build();
+
+
+
+
+        nm.notify(
+                99,
+                notification
+        );
+
+
+
     }
+
+
 
 
 
@@ -256,16 +452,34 @@ public class PhantomGuardService extends Service {
 
 
 
-        if(Build.VERSION.SDK_INT>=26){
+
+
+        if(Build.VERSION.SDK_INT >= 26){
 
 
 
             NotificationChannel channel =
+
                     new NotificationChannel(
+
                             channelID,
-                            "Phantom Guard",
-                            NotificationManager.IMPORTANCE_LOW
+
+                            "Phantom Guard Alert",
+
+                            NotificationManager
+                                    .IMPORTANCE_HIGH
+
                     );
+
+
+
+            channel.setDescription(
+                    "Security alert service"
+            );
+
+
+
+            channel.enableVibration(true);
 
 
 
@@ -282,25 +496,36 @@ public class PhantomGuardService extends Service {
 
 
 
+
+
+
+
         Notification notification =
+
                 new Notification.Builder(
                         this,
                         channelID
                 )
 
+
                         .setContentTitle(
                                 "Phantom Guard Active"
                         )
+
 
                         .setContentText(
                                 "Device Protection Running"
                         )
 
+
                         .setSmallIcon(
                                 android.R.drawable.ic_lock_lock
                         )
 
+
                         .build();
+
+
 
 
 
@@ -311,14 +536,51 @@ public class PhantomGuardService extends Service {
         );
 
 
+
     }
 
 
 
 
 
+
+
+
+
+
     @Override
-    public android.os.IBinder onBind(Intent i){
+    public void onDestroy(){
+
+
+        if(player != null){
+
+
+            player.stop();
+
+            player.release();
+
+            player=null;
+
+        }
+
+
+
+        super.onDestroy();
+
+
+    }
+
+
+
+
+
+
+
+
+
+
+    @Override
+    public android.os.IBinder onBind(Intent intent){
 
         return null;
 
